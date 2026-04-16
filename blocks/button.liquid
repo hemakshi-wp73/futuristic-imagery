@@ -1,0 +1,79 @@
+<div
+  class="main-button"
+  style="margin-right: 12px;"
+  {{ block.shopify_attributes }}
+>
+  {% if block.settings.label != blank %}
+    <a
+      href="{{ block.settings.link }}"
+      class="button button--{{ block.settings.style }}  
+       {% if block.settings.button_width == 'fit' %}button--fit{% endif %}
+  {% if block.settings.button_width == 'full' %}button--full{% endif %}
+  {% if block.settings.button_width == 'custom' %}button--custom{% endif %}"
+  style="
+    {% if block.settings.button_width == 'custom' %}
+      --button-custom-width: {{ block.settings.custom_button_width }}px;
+    {% endif %}
+  "
+    >
+      {{ block.settings.label }}
+    </a>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Button",
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Button label",
+      "default": "Shop now"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Button link"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Button style",
+      "default": "primary",
+      "options": [
+        { "value": "primary", "label": "Primary" },
+        { "value": "secondary", "label": "Secondary" },
+        { "value": "outline", "label": "Outline" }
+      ]
+    },
+    {
+  "type": "select",
+  "id": "button_width",
+  "label": "Button width",
+  "default": "fit",
+  "options": [
+    { "value": "fit", "label": "Fit content" },
+    { "value": "custom", "label": "Custom width" },
+    { "value": "full", "label": "Full width" }
+  ]
+},
+{
+  "type": "range",
+  "id": "custom_button_width",
+  "label": "Custom button width (px)",
+  "min": 80,
+  "max": 600,
+  "step": 10,
+  "default": 200,
+  "visible_if": "{{ block.settings.button_width == \"custom\" }}"
+}
+
+
+  ],
+ "presets": [
+  { "name": "Button" }
+  ]
+}
+{% endschema %}
+ 

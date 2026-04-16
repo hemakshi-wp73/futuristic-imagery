@@ -1,7 +1,34 @@
-<header>
-  <h2 class="header__title">
-    {{ shop.name | link_to: routes.root_url }}
-  </h2>
+<header class="color-scheme color-{{ section.settings.color_scheme }}">
+<div class="page-width">
+<div class="header-items">
+
+  {% assign desktop_logo = section.settings.logo %}
+{% assign mobile_logo = section.settings.logo_mobile | default: desktop_logo %}
+
+<a href="{{ routes.root_url }}" class="header__logo-link">
+  {% if desktop_logo != blank %}
+    <img
+      src="{{ desktop_logo | image_url }}"
+      alt="{{ shop.name }}"
+      class="header__logo header__logo--desktop"
+      style="max-width: {{ section.settings.logo_width }}px;"
+      loading="lazy"
+    >
+
+    <img
+      src="{{ mobile_logo | image_url }}"
+      alt="{{ shop.name }}"
+      class="header__logo header__logo--mobile"
+      style="max-width: {{ section.settings.logo_width_mobile }}px;"
+      loading="lazy"
+    >
+  {% else %}
+    <h2 class="header__logo_title">
+      {{ shop.name }}
+    </h2>
+  {% endif %}
+</a>
+
 
   <div class="header__menu">
     {% for link in section.settings.menu.links %}
@@ -18,19 +45,17 @@
       {% if cart.item_count > 0 %}
         <sup>{{ cart.item_count }}</sup>
       {% endif %}
-
       {{ 'icon-cart.svg' | inline_asset_content }}
     </a>
   </div>
+  </div>
+</div>
 </header>
 
-{% stylesheet %}
-  header {
-    height: 5rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
+{% style %}
+ .header__logo{
+  margin: 0 !important;
+ }
   header a {
     position: relative;
     text-decoration: none;
@@ -50,17 +75,125 @@
     display: flex;
     gap: 1rem;
   }
-{% endstylesheet %}
+
+  /* Base layout */
+ .header-items {
+    height: 5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+/* Default orders */
+.header__logo { order: 1; }
+.header__menu  { order: 2; margin: auto; }
+.header__icons { order: 3; }
+
+/* Layout: Menu left · Logo center · Cart right */
+{% if section.settings.header_layout == 'logo-center' %}
+  .header__menu { order: 1; margin: 0; }
+  .header__logo { order: 2; margin: auto; }
+  .header__icons { order: 3; }
+{% endif %}
+
+/* Layout: Logo left · Menu center · Cart right (default look but controlled) */
+{% if section.settings.header_layout == 'logo-left' %}
+  .header__logo { order: 1; }
+  .header__menu { order: 2; margin: auto; }
+  .header__icons { order: 3; }
+{% endif %}
+
+/* Layout: Menu left · Cart center · Logo right */
+{% if section.settings.header_layout == 'logo-right' %}
+  .header__menu { order: 1; margin: 0; }
+  .header__icons { order: 2; margin: auto; }
+  .header__logo { order: 3; }
+{% endif %}
+
+/* Layout: Logo left · Cart center · Menu right */
+{% if section.settings.header_layout == 'cart-center' %}
+  .header__logo { order: 1; }
+  .header__icons { order: 2; margin: auto; }
+  .header__menu { order: 3; }
+{% endif %}
+
+.header__logo--mobile {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .header__logo--desktop {
+    display: none;
+  }
+
+  .header__logo--mobile {
+    display: block;
+  }
+}
+
+{% endstyle %}
 
 {% schema %}
 {
   "name": "t:general.header",
   "settings": [
+
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Desktop logo"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "Desktop logo width",
+      "min": 60,
+      "max": 400,
+      "step": 5,
+      "default": 160,
+      "unit": "px"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_mobile",
+      "label": "Mobile logo (optional)"
+    },
+    {
+      "type": "range",
+      "id": "logo_width_mobile",
+      "label": "Mobile logo width",
+      "min": 40,
+      "max": 300,
+      "step": 5,
+      "default": 120,
+      "unit": "px"
+    },
+
     {
       "type": "link_list",
       "id": "menu",
-      "label": "t:labels.menu"
-    }
+      "label": "t:labels.menu",
+      "default": "main-menu"
+    },
+     {
+      "type": "select",
+      "id": "header_layout",
+      "label": "Header alignment",
+      "default": "logo-left",
+      "options": [
+        { "value": "logo-center", "label": "Menu left · Logo center · Cart right" },
+        { "value": "logo-left", "label": "Logo left · Menu center · Cart right" },
+        { "value": "logo-right", "label": "Menu left · Cart center · Logo right" },
+        { "value": "cart-center", "label": "Logo left · Cart center · Menu right" }
+      ]
+    },
+    {
+  "type": "color_scheme",
+  "id": "color_scheme",
+  "label": "Color scheme",
+  "default": "scheme-1"
+}
+
   ]
 }
 {% endschema %}

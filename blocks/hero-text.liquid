@@ -1,0 +1,156 @@
+<div
+  class="hero__text hero__text--{{ block.settings.text_type }}"
+  style="
+  margin-top: {{ block.settings.margin_top }}px;
+    margin-bottom: {{ block.settings.margin_bottom }}px;
+    text-align: {{ block.settings.text_align }};
+  "
+  {{ block.shopify_attributes }}
+>
+  {% if block.settings.text != blank %}
+    <{{ block.settings.text_tag }} class="hero__heading">
+      {{ block.settings.text }}
+    </{{ block.settings.text_tag }}>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Hero Text",
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text content"
+    },
+    {
+      "type": "select",
+      "id": "text_tag",
+      "label": "Text size",
+      "default": "p",
+      "options": [
+        { "value": "h1", "label": "Heading 1" },
+        { "value": "h2", "label": "Heading 2" },
+        { "value": "h3", "label": "Heading 3" },
+        { "value": "h4", "label": "Heading 4" },
+        { "value": "h5", "label": "Heading 5" },
+        { "value": "h6", "label": "Heading 6" },
+        { "value": "p", "label": "Paragraph" },
+        { "value": "div", "label": "custom" },
+      ]
+    },
+      {
+      "type": "select",
+      "id": "font_size",
+      "label": "Size",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.default"
+        },
+        {
+          "value": "0.625rem",
+          "label": "10px"
+        },
+        {
+          "value": "0.75rem",
+          "label": "12px"
+        },
+        {
+          "value": "0.875rem",
+          "label": "14px"
+        },
+        {
+          "value": "1rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.125rem",
+          "label": "18px"
+        },
+        {
+          "value": "1.25rem",
+          "label": "20px"
+        },
+        {
+          "value": "1.5rem",
+          "label": "24px"
+        },
+        {
+          "value": "2rem",
+          "label": "32px"
+        },
+        {
+          "value": "2.5rem",
+          "label": "40px"
+        },
+        {
+          "value": "3rem",
+          "label": "48px"
+        },
+        {
+          "value": "3.5rem",
+          "label": "56px"
+        },
+        {
+          "value": "4.5rem",
+          "label": "72px"
+        },
+        {
+          "value": "5.5rem",
+          "label": "88px"
+        },
+        {
+          "value": "7.5rem",
+          "label": "120px"
+        },
+        {
+          "value": "9.5rem",
+          "label": "152px"
+        },
+        {
+          "value": "11.5rem",
+          "label": "184px"
+        }
+      ],
+      "default": "1rem",
+      "visible_if": "{{ block.settings.text_tag == 'div' }}"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text alignment",
+      "default": "left",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Top spacing",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Bottom spacing",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 16
+    }
+  ],
+  "presets":[
+    {
+      "name": "hero-text"
+    }
+  ]
+}
+{% endschema %}
+ 

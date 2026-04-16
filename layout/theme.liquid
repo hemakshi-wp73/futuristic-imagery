@@ -1,6 +1,14 @@
 <!doctype html>
 <html lang="{{ request.locale.iso_code }}">
   <head>
+  {% if settings.favicon != blank %}
+  <link
+    rel="icon"
+    type="image/png"
+    href="{{ settings.favicon | image_url: width: 32 }}"
+  >
+{% endif %}
+
     {% # Inlined CSS Variables %}
     {% render 'css-variables' %}
 
@@ -19,6 +27,7 @@
 
     {% # Load and preload the critical CSS %}
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
+    {{ 'base.css' | asset_url | stylesheet_tag: preload: true }}
 
     {% # Social, title, etc. %}
     {% render 'meta-tags' %}
