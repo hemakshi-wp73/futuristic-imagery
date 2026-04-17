@@ -1,0 +1,231 @@
+{%- liquid
+  assign block_id = block.id | default: section.id | default: 'image-block'
+  assign desktop_image = block.settings.desktop_image
+  assign mobile_image = block.settings.mobile_image
+  assign link = block.settings.link
+
+  assign width = block.settings.width
+  assign height = block.settings.height
+  assign aspect_ratio = block.settings.aspect_ratio
+
+  assign alt_text = desktop_image.alt | default: mobile_image.alt | default: shop.name | escape
+-%}
+
+{%- style -%}
+  .image-block-{{ block_id }} {
+    margin-top: {{ block.settings.top_spacing }}px;
+    margin-bottom: {{ block.settings.bottom_spacing }}px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .image-block-{{ block_id }} .image-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: block;
+    
+    {%- if width == 'small' -%}
+      width: 25%;
+    {%- elsif width == 'medium' -%}
+      width: 50%;
+    {%- elsif width == 'large' -%}
+      width: 75%;
+    {%- elsif width == 'full' -%}
+      width: 100%;
+    {%- elsif width == 'custom' -%}
+      width: 100%;
+      max-width: {{ block.settings.custom_width }}px;
+    {%- else -%}
+      width: max-content;
+      max-width: 100%;
+    {%- endif -%}
+
+    {%- if aspect_ratio != 'original' -%}
+      aspect-ratio: {{ aspect_ratio }};
+      height: auto;
+    {%- else -%}
+      {%- if height == 'small' -%}
+        height: 200px;
+      {%- elsif height == 'medium' -%}
+        height: 400px;
+      {%- elsif height == 'large' -%}
+        height: 600px;
+      {%- elsif height == 'custom' -%}
+        height: {{ block.settings.custom_height }}px;
+      {%- else -%}
+        height: auto;
+      {%- endif -%}
+    {%- endif -%}
+  }
+
+  .image-block-{{ block_id }} .image-wrapper img,
+  .image-block-{{ block_id }} .image-wrapper svg {
+    display: block;
+    width: 100%;
+    {%- if aspect_ratio != 'original' or height != 'auto' -%}
+      height: 100%;
+      object-fit: cover;
+    {%- else -%}
+      height: auto;
+    {%- endif -%}
+  }
+
+  .image-block-{{ block_id }} .placeholder-svg {
+    background-color: #f3f3f3;
+    fill: #ccc;
+    min-height: 200px;
+    min-width: 200px;
+  }
+{%- endstyle -%}
+
+<div class="image-block-{{ block_id }}" {{ block.shopify_attributes }}>
+  {%- if link != blank -%}
+    <a href="{{ link }}" class="image-wrapper" aria-label="{{ alt_text }}">
+  {%- else -%}
+    <div class="image-wrapper">
+  {%- endif -%}
+
+    {%- if desktop_image != blank -%}
+      <picture>
+        {%- if mobile_image != blank -%}
+          <source media="(max-width: 767px)" srcset="{{ mobile_image | image_url: width: 400 }} 400w, {{ mobile_image | image_url: width: 600 }} 600w, {{ mobile_image | image_url: width: 800 }} 800w, {{ mobile_image | image_url: width: 1000 }} 1000w" sizes="(max-width: 767px) 100vw, 50vw">
+        {%- endif -%}
+        {{ desktop_image | image_url: width: 2000 | image_tag: widths: '400, 600, 800, 1000, 1200, 1400, 1600, 2000', sizes: '100vw', alt: alt_text, class: 'image-block__img' }}
+      </picture>
+    {%- elsif mobile_image != blank -%}
+      {{ mobile_image | image_url: width: 2000 | image_tag: widths: '400, 600, 800, 1000, 1200, 1400, 1600, 2000', sizes: '100vw', alt: alt_text, class: 'image-block__img' }}
+    {%- else -%}
+      {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+    {%- endif -%}
+
+  {%- if link != blank -%}
+    </a>
+  {%- else -%}
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Image",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Image Inputs"
+    },
+    {
+      "type": "image_picker",
+      "id": "desktop_image",
+      "label": "Desktop Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "Mobile Image",
+      "info": "Falls back to desktop image if not selected."
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Image Link"
+    },
+    {
+      "type": "header",
+      "content": "Spacing Controls"
+    },
+    {
+      "type": "range",
+      "id": "top_spacing",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Top Spacing",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "bottom_spacing",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Bottom Spacing",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Image Size Options"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "options": [
+        { "value": "original", "label": "Original" },
+        { "value": "small", "label": "Small (25%)" },
+        { "value": "medium", "label": "Medium (50%)" },
+        { "value": "large", "label": "Large (75%)" },
+        { "value": "full", "label": "Full Width (100%)" },
+        { "value": "custom", "label": "Custom Width" }
+      ],
+      "default": "full"
+    },
+    {
+      "type": "range",
+      "id": "custom_width",
+      "min": 100,
+      "max": 1000,
+      "step": 10,
+      "unit": "px",
+      "label": "Custom Width",
+      "default": 800
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "Height",
+      "options": [
+        { "value": "auto", "label": "Auto" },
+        { "value": "small", "label": "Small (200px)" },
+        { "value": "medium", "label": "Medium (400px)" },
+        { "value": "large", "label": "Large (600px)" },
+        { "value": "custom", "label": "Custom Height" }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "range",
+      "id": "custom_height",
+      "min": 100,
+      "max": 1000,
+      "step": 10,
+      "unit": "px",
+      "label": "Custom Height",
+      "default": 400
+    },
+    {
+      "type": "header",
+      "content": "Aspect Ratio / Shape"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "label": "Aspect Ratio",
+      "options": [
+        { "value": "original", "label": "Original (no crop)" },
+        { "value": "1 / 1", "label": "Square (1:1)" },
+        { "value": "4 / 5", "label": "Portrait (4:5)" }
+      ],
+      "default": "original",
+      "info": "Overrides height setting if not set to original to prevent distortion."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image"
+    }
+  ]
+}
+{% endschema %}

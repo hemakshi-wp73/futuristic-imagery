@@ -10,7 +10,7 @@
 {
   "sections": {
     "main": {
-      "type": "hero-banner",
+      "type": "cs-banner",
       "settings": {}
     }
   },

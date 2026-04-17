@@ -1,0 +1,172 @@
+<div id="CartDrawer" class="cart-drawer">
+  <div class="cart-overlay" data-close></div>
+
+  <div class="cart-drawer-content">
+    <button class="cart-close" data-close>×</button>
+
+    <h2>Your Cart</h2>
+
+    <div id="CartItems"></div>
+
+    <div class="cart-footer">
+      <p>Total: <span id="CartTotal"></span></p>
+      <a href="/checkout" class="checkout-btn">Checkout</a>
+    </div>
+  </div>
+</div>
+<style>
+.cart-drawer {
+  position: fixed;
+  inset: 0;
+  display: none;
+  z-index: 999;
+}
+
+.cart-drawer.active {
+  display: block;
+}
+
+.cart-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+}
+
+.cart-drawer-content {
+  position: absolute;
+  right: -400px;
+  top: 0;
+  width: 400px;
+  height: 100%;
+  background: white;
+  transition: 0.3s ease;
+  padding: 20px;
+}
+
+.cart-drawer.active .cart-drawer-content {
+  right: 0;
+}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  const cartDrawer = document.getElementById('CartDrawer');
+
+  // OPEN
+  window.openCartDrawer = function () {
+    if (!cartDrawer) return;
+    cartDrawer.classList.add('active');
+    loadCart();
+  };
+
+  // CLOSE
+  function closeCartDrawer() {
+    if (!cartDrawer) return;
+    cartDrawer.classList.remove('active');
+  }
+
+  // CLOSE EVENTS
+  document.addEventListener('click', function(e) {
+    if (e.target.matches('[data-close]')) {
+      closeCartDrawer();
+    }
+  });
+
+  // LOAD CART
+  function loadCart() {
+    fetch('/cart.js')
+      .then(res => res.json())
+      .then(cart => renderCart(cart));
+  }
+
+  // RENDER
+  function renderCart(cart) {
+    const container = document.getElementById('CartItems');
+    const total = document.getElementById('CartTotal');
+
+    if (!container || !total) return;
+
+    container.innerHTML = '';
+
+    // EMPTY CART
+    if (cart.items.length === 0) {
+      container.innerHTML = `<p>Your cart is empty</p>`;
+      total.innerText = '0.00';
+      return;
+    }
+
+    cart.items.forEach(item => {
+      container.innerHTML += `
+        <div class="cart-item">
+          <img src="${item.image}" width="60" />
+          <div>
+            <p>${item.product_title}</p>
+            <p>${item.quantity} × ₹${(item.price / 100).toFixed(2)}</p>
+            <button class="remove-item" data-key="${item.key}">Remove</button>
+          </div>
+        </div>
+      `;
+    });
+
+    total.innerText = '₹' + (cart.total_price / 100).toFixed(2);
+  }
+
+  // REMOVE ITEM (EVENT DELEGATION)
+  document.addEventListener('click', function(e) {
+    if (e.target.matches('.remove-item')) {
+      const key = e.target.dataset.key;
+      removeItem(key);
+    }
+  });
+
+  function removeItem(key) {
+    fetch('/cart/change.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: key,
+        quantity: 0
+      })
+    }).then(() => loadCart());
+  }
+
+  // ADD TO CART (AJAX)
+  document.addEventListener('submit', function(e) {
+    if (e.target.matches('form[action="/cart/add"]')) {
+      e.preventDefault();
+
+      const formData = new FormData(e.target);
+
+      fetch('/cart/add.js', {
+        method: 'POST',
+        body: formData
+      })
+      .then(() => {
+        openCartDrawer();
+      });
+    }
+  });
+
+  // UPDATE QUANTITY
+  window.updateQuantity = function (key, qty) {
+    fetch('/cart/change.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: key,
+        quantity: qty
+      })
+    }).then(() => loadCart());
+  };
+
+document.addEventListener('click', function(e) {
+  const cartIcon = e.target.closest('#CartIcon');
+
+  if (cartIcon) {
+    e.preventDefault(); // STOP redirect
+    openCartDrawer();  // OPEN drawer
+  }
+});
+
+});
+</script>

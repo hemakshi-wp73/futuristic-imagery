@@ -1,105 +1,230 @@
-{% doc %}
-  Renders a group of blocks with configurable layout direction, gap and
-  alignment.
+        {% doc %}
+          Renders a group of blocks with configurable layout direction, gap and
+          alignment.
 
-  All settings apply to only one dimension to reduce configuration complexity.
+          This component is a wrapper concerned only with rendering its children in
+          the specified layout direction with appropriate padding and alignment.
 
-  This component is a wrapper concerned only with rendering its children in
-  the specified layout direction with appropriate padding and alignment.
+          @example
+          {% content_for 'block', type: 'group', id: 'group' %}
+        {% enddoc %}
 
-  @example
-  {% content_for 'block', type: 'group', id: 'group' %}
-{% enddoc %}
+        <div
+          class="group group--{{ block.settings.layout_direction }} color-{{ block.settings.color_scheme }}"
+          style="
+            --group-width: {% if block.settings.width == 'custom' %}{{ block.settings.custom_width }}{{ block.settings.width_unit }}{% else %}{{ block.settings.width }}{% endif %};
+            --padding-top-desktop: {{ block.settings.padding_top_desktop }}px;
+            --padding-bottom-desktop: {{ block.settings.padding_bottom_desktop }}px;
+            --padding-top-mobile: {{ block.settings.padding_top_mobile }}px;
+            --padding-bottom-mobile: {{ block.settings.padding_bottom_mobile }}px;
+            --horizontal-alignment: {{ block.settings.horizontal_alignment }};
+            --vertical-alignment: {{ block.settings.vertical_alignment }};
+            --gap: {{ block.settings.gap }}px;
+          "
+          {{ block.shopify_attributes }}
+        >
+          {% content_for 'blocks' %}
+        </div>
 
-<div
-  class="group {{ block.settings.layout_direction }}"
-  style="
-    --padding: {{ block.settings.padding }}px;
-    --alignment: {{ block.settings.alignment }};
-  "
-  {{ block.shopify_attributes }}
->
-  {% content_for 'blocks' %}
-</div>
+        {% stylesheet %}
+          .group {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow: hidden;
+            width: var(--group-width, 100%);
+            padding-top: var(--padding-top-mobile);
+            padding-bottom: var(--padding-bottom-mobile);
+            gap: var(--gap);
+          }
 
-{% stylesheet %}
-  .group {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow: hidden;
-    width: 100%;
-  }
+          @media screen and (min-width: 750px) {
+            .group {
+              padding-top: var(--padding-top-desktop);
+              padding-bottom: var(--padding-bottom-desktop);
+            }
+          }
 
-  .group--horizontal {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 var(--padding);
-  }
+          .group--row {
+            flex-direction: row;
+            justify-content: var(--horizontal-alignment);
+            align-items: var(--vertical-alignment);
+          }
 
-  .group--vertical {
-    flex-direction: column;
-    align-items: var(--alignment);
-    padding: var(--padding) 0;
-  }
-{% endstylesheet %}
+          .group--column {
+            flex-direction: column;
+            align-items: var(--horizontal-alignment);
+            justify-content: var(--vertical-alignment);
+          }
+        {% endstylesheet %}
 
-{% schema %}
-{
-  "name": "t:general.group",
-  "blocks": [{ "type": "@theme" }],
-  "settings": [
-    {
-      "type": "select",
-      "id": "layout_direction",
-      "label": "t:labels.layout_direction",
-      "default": "group--vertical",
-      "options": [
-        { "value": "group--horizontal", "label": "t:options.direction.horizontal" },
-        { "value": "group--vertical", "label": "t:options.direction.vertical" }
-      ]
-    },
-    {
-      "visible_if": "{{ block.settings.layout_direction == 'group--vertical' }}",
-      "type": "select",
-      "id": "alignment",
-      "label": "t:labels.alignment",
-      "default": "flex-start",
-      "options": [
-        { "value": "flex-start", "label": "t:options.alignment.left" },
-        { "value": "center", "label": "t:options.alignment.center" },
-        { "value": "flex-end", "label": "t:options.alignment.right" }
-      ]
-    },
-    {
-      "type": "range",
-      "id": "padding",
-      "label": "t:labels.padding",
-      "default": 0,
-      "min": 0,
-      "max": 200,
-      "step": 2,
-      "unit": "px"
-    }
-  ],
-  "presets": [
-    {
-      "name": "t:general.column",
-      "category": "t:general.layout",
-      "settings": {
-        "layout_direction": "group--vertical",
-        "alignment": "flex-start",
-        "padding": 0
-      }
-    },
-    {
-      "name": "t:general.row",
-      "category": "t:general.layout",
-      "settings": {
-        "layout_direction": "group--horizontal",
-        "padding": 0
-      }
-    }
-  ]
-}
-{% endschema %}
+        {% schema %}
+        {
+          "name": "t:general.group",
+          "blocks": [{ "type": "@theme" }],
+          "settings": [
+            {
+              "type": "color_scheme",
+              "id": "color_scheme",
+              "label": "Color Scheme",
+              "default": "background-1"
+            },
+            {
+              "type": "select",
+              "id": "width",
+              "label": "Width",
+              "default": "100%",
+              "options": [
+                { "value": "fit-content", "label": "Fit Content" },
+                { "value": "100%", "label": "Fill Width" },
+                { "value": "custom", "label": "Custom Width" }
+              ]
+            },
+            {
+              "type": "range",
+              "id": "custom_width",
+              "label": "Custom width",
+              "default": 400,
+              "min": 10,
+              "max": 1000,
+              "step": 10,
+              "info": "Only applies when Width is set to Custom Width"
+            },
+            {
+              "type": "select",
+              "id": "width_unit",
+              "label": "Width unit",
+              "default": "px",
+              "options": [
+                { "value": "px", "label": "px" },
+                { "value": "%", "label": "%" }
+              ]
+            },
+            {
+              "type": "select",
+              "id": "layout_direction",
+              "label": "t:labels.layout_direction",
+              "default": "column",
+              "options": [
+                { "value": "row", "label": "t:general.row" },
+                { "value": "column", "label": "t:general.column" }
+              ]
+            },
+            {
+              "type": "range",
+              "id": "gap",
+              "label": "Gap between blocks",
+              "default": 16,
+              "min": 0,
+              "max": 100,
+              "step": 2,
+              "unit": "px"
+            },
+            {
+              "type": "select",
+              "id": "horizontal_alignment",
+              "label": "Horizontal alignment",
+              "default": "flex-start",
+              "options": [
+                { "value": "flex-start", "label": "Left" },
+                { "value": "center", "label": "Center" },
+                { "value": "flex-end", "label": "Right" },
+                { "value": "space-between", "label": "Space between" },
+                { "value": "space-around", "label": "Space around" }
+              ]
+            },
+            {
+              "type": "select",
+              "id": "vertical_alignment",
+              "label": "Vertical alignment",
+              "default": "flex-start",
+              "options": [
+                { "value": "flex-start", "label": "Top" },
+                { "value": "center", "label": "Middle" },
+                { "value": "flex-end", "label": "Bottom" },
+                { "value": "space-between", "label": "Space between" },
+                { "value": "space-around", "label": "Space around" }
+              ]
+            },
+            {
+              "type": "header",
+              "content": "Desktop Padding"
+            },
+            {
+              "type": "range",
+              "id": "padding_top_desktop",
+              "label": "Padding top",
+              "default": 36,
+              "min": 0,
+              "max": 200,
+              "step": 2,
+              "unit": "px"
+            },
+            {
+              "type": "range",
+              "id": "padding_bottom_desktop",
+              "label": "Padding bottom",
+              "default": 36,
+              "min": 0,
+              "max": 200,
+              "step": 2,
+              "unit": "px"
+            },
+            {
+              "type": "header",
+              "content": "Mobile Padding"
+            },
+            {
+              "type": "range",
+              "id": "padding_top_mobile",
+              "label": "Padding top",
+              "default": 20,
+              "min": 0,
+              "max": 200,
+              "step": 2,
+              "unit": "px"
+            },
+            {
+              "type": "range",
+              "id": "padding_bottom_mobile",
+              "label": "Padding bottom",
+              "default": 20,
+              "min": 0,
+              "max": 200,
+              "step": 2,
+              "unit": "px"
+            }
+          ],
+          "presets": [
+            {
+              "name": "t:general.column",
+              "category": "t:general.layout",
+              "settings": {
+                "width": "100%",
+                "layout_direction": "column",
+                "gap": 16,
+                "horizontal_alignment": "flex-start",
+                "vertical_alignment": "flex-start",
+                "padding_top_desktop": 0,
+                "padding_bottom_desktop": 0,
+                "padding_top_mobile": 0,
+                "padding_bottom_mobile": 0
+              }
+            },
+            {
+              "name": "t:general.row",
+              "category": "t:general.layout",
+              "settings": {
+                "width": "100%",
+                "layout_direction": "row",
+                "gap": 16,
+                "horizontal_alignment": "space-between",
+                "vertical_alignment": "center",
+                "padding_top_desktop": 0,
+                "padding_bottom_desktop": 0,
+                "padding_top_mobile": 0,
+                "padding_bottom_mobile": 0
+              }
+            }
+          ]
+        }
+        {% endschema %}
