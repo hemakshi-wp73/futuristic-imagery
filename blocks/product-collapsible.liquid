@@ -1,0 +1,40 @@
+<div {{ block.shopify_attributes }} class="collapsible">
+  <button class="collapsible-toggle">
+    {{ block.settings.heading }}
+  </button>
+  <div class="collapsible-content">
+    {{ block.settings.content }}
+  </div>
+</div>
+
+<style>
+.collapsible-content {
+  display: none;
+}
+.collapsible.open .collapsible-content {
+  display: block;
+}
+</style>
+
+<script>
+document.addEventListener("click", function(e) {
+  if (e.target.classList.contains("collapsible-toggle")) {
+    e.target.parentElement.classList.toggle("open");
+  }
+});
+</script>
+
+{% schema %}
+{
+  "name": "Collapsible",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading" },
+    { "type": "richtext", "id": "content", "label": "Content" }
+  ],
+   "presets":[
+    {
+      "name": "Collapsible"
+    }
+  ]
+}
+{% endschema %}

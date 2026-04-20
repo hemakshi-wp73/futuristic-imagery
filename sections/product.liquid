@@ -1,52 +1,409 @@
-{% comment %}
-  This section is used in the product template to render product page with
-  media, content, and add-to-cart form.
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/product
-{% endcomment %}
+<div class="page-width">
+  <div id="product-{{ section.id }}" class="product-section {% if section.settings.image_position == 'right' %}reverse{% endif %}">
+    
+    <!-- MEDIA -->
+    <div class="product-media" style="width: {{ section.settings.image_width }}%;">
 
-<div class="product-images">
-  {% for image in product.images %}
-    {% render 'image', class: 'product-image', image: image %}
-  {% endfor %}
+      {% case section.settings.gallery_style %}
+
+        <!-- STACKED -->
+        {% when 'stacked' %}
+          <div class="media-gallery stacked">
+            {% for media in product.media %}
+              <div class="media-item">
+               {% assign full_img = media | image_url: width: 2000 %}
+{{ media | image_url: width: 1200 | image_tag: class: 'main-product-image zoomable', data-full: full_img }}
+              </div>
+            {% endfor %}
+          </div>
+
+        <!-- GRID -->
+        {% when 'grid' %}
+          <div class="media-gallery grid">
+            {% for media in product.media %}
+              <div class="media-item">
+              {% assign full_img = media | image_url: width: 2000 %}
+{{ media | image_url: width: 600 | image_tag: class: 'main-product-image zoomable', data-full: full_img }}
+              </div>
+            {% endfor %}
+          </div>
+
+        <!-- SLIDER -->
+        {% when 'slider' %}
+          <div class="media-gallery slider">
+
+            <!-- MAIN -->
+            <div class="swiper main-swiper-{{ section.id }}">
+              <div class="swiper-wrapper">
+                {% for media in product.media %}
+                  <div class="swiper-slide">
+                   {% assign full_img = media | image_url: width: 2000 %}
+{{ media | image_url: width: 1200 | image_tag: class: 'main-product-image zoomable', data-full: full_img }}
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- THUMBS -->
+            <div class="swiper thumb-swiper-{{ section.id }}">
+              <div class="swiper-wrapper">
+                {% for media in product.media %}
+                  <div class="swiper-slide">
+                    {{ media | image_url: width: 200 | image_tag }}
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+
+          </div>
+
+      {% endcase %}
+
+    </div>
+
+    <!-- PRODUCT INFO -->
+    <div class="product-info" style="width: {{ 100 | minus: section.settings.image_width }}%;">
+      {% content_for 'blocks' %}
+    </div>
+
+  </div>
 </div>
 
-<div class="product-info">
-  <h1>{{ product.title }}</h1>
-  <p>{{ product.price | money }}</p>
-  <p>{{ product.description }}</p>
+<!-- ZOOM MODAL -->
+<div id="global-zoom-modal" class="zoom-modal">
+  <img src="" alt="Zoomed Image">
 </div>
 
-<div class="product-form">
-  {% form 'product', product %}
-    {% assign current_variant = product.selected_or_first_available_variant %}
+<!-- STYLES -->
+<style>
+#product-{{ section.id }} {
+  display: flex;
+  gap: 40px;
+}
 
-    <select name="id">
-      {% for variant in product.variants %}
-        <option
-          value="{{ variant.id }}"
-          {% if variant == current_variant %}
-            selected="selected"
-          {% endif %}
-        >
-          {{ variant.title }} - {{ variant.price | money }}
-        </option>
-      {% endfor %}
-    </select>
+#product-{{ section.id }}.reverse {
+  flex-direction: row-reverse;
+}
 
-    <input type="text" name="quantity" min="1" value="1">
+/* STACKED */
+#product-{{ section.id }} .stacked .media-item {
+  margin-bottom: 16px;
+}
 
-    <input type="submit" value="Add to cart">
-    {{ form | payment_button }}
-  {% endform %}
-</div>
+/* GRID */
+#product-{{ section.id }} .grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
 
+/* SWIPER */
+#product-{{ section.id }} .main-swiper-{{ section.id }} {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+#product-{{ section.id }} .thumb-swiper-{{ section.id }} {
+  height: 80px;
+}
+
+#product-{{ section.id }} .thumb-swiper-{{ section.id }} .swiper-slide {
+  opacity: 0.5;
+  cursor: pointer;
+}
+
+#product-{{ section.id }} .thumb-swiper-{{ section.id }} .swiper-slide-thumb-active {
+  opacity: 1;
+  border: 2px solid #000;
+}
+
+/* IMAGE */
+.main-product-image {
+  width: 100%;
+  border-radius: 12px;
+  cursor: zoom-in;
+}
+
+/* ZOOM MODAL */
+.zoom-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.92);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.zoom-modal img {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 12px;
+  transform-origin: center center;
+  cursor: grab;
+  transition: transform 0.15s ease-out;
+  will-change: transform;
+}
+
+.zoom-modal.active img {
+  transform: scale(1);
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  #product-{{ section.id }} {
+    flex-direction: column;
+  }
+
+  #product-{{ section.id }} .grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+<!-- SCRIPT -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const section = document.querySelector("#product-{{ section.id }}");
+
+  /* SWIPER INIT */
+  const thumbEl = section.querySelector(".thumb-swiper-{{ section.id }}");
+  const mainEl = section.querySelector(".main-swiper-{{ section.id }}");
+
+  if (thumbEl && mainEl) {
+    const thumbSwiper = new Swiper(thumbEl, {
+      spaceBetween: 10,
+      slidesPerView: window.innerWidth < 768 ? 3 : 4,
+      freeMode: true,
+      watchSlidesProgress: true,
+    });
+
+    new Swiper(mainEl, {
+      spaceBetween: 10,
+      loop: false,
+      thumbs: {
+        swiper: thumbSwiper,
+      },
+    });
+  }
+
+
+
+});
+</script>
+{% comment %} ---- product image zoom ------- {% endcomment %} 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const ZOOM_TYPE = "{{ section.settings.zoom_type }}";
+  const PINCH_ENABLED = {{ section.settings.enable_pinch | json }};
+
+  const modal = document.getElementById("global-zoom-modal");
+  const modalImg = modal.querySelector("img");
+
+  let scale = 1;
+  let pos = { x: 0, y: 0 };
+  let isDragging = false;
+  let start = { x: 0, y: 0 };
+
+  /* =========================
+     OPEN ZOOM
+  ========================== */
+  document.body.addEventListener("click", function(e) {
+    const target = e.target.closest(".zoomable");
+    if (!target || ZOOM_TYPE === "none") return;
+
+    const fullImage = target.dataset.full || target.src;
+
+    if (ZOOM_TYPE === "modal") {
+      modal.style.display = "flex";
+      setTimeout(() => modal.classList.add("active"), 10);
+
+      modalImg.src = fullImage;
+
+      scale = 1;
+      pos = { x: 0, y: 0 };
+      updateTransform();
+    }
+  });
+
+  /* =========================
+     CLOSE
+  ========================== */
+  modal.addEventListener("click", function (e) {
+    if (e.target !== modalImg) {
+      modal.classList.remove("active");
+      setTimeout(() => modal.style.display = "none", 200);
+    }
+  });
+
+  /* =========================
+     DRAG TO PAN
+  ========================== */
+  modalImg.addEventListener("mousedown", (e) => {
+    isDragging = true;
+    start.x = e.clientX - pos.x;
+    start.y = e.clientY - pos.y;
+    modalImg.style.cursor = "grabbing";
+  });
+
+  window.addEventListener("mouseup", () => {
+    isDragging = false;
+    modalImg.style.cursor = "grab";
+  });
+
+  window.addEventListener("mousemove", (e) => {
+    if (!isDragging) return;
+
+    pos.x = e.clientX - start.x;
+    pos.y = e.clientY - start.y;
+
+    updateTransform();
+  });
+
+  /* =========================
+     WHEEL ZOOM (DESKTOP)
+  ========================== */
+  modal.addEventListener("wheel", (e) => {
+    if (ZOOM_TYPE !== "modal") return;
+
+    e.preventDefault();
+
+    const delta = e.deltaY * -0.01;
+    scale += delta;
+
+    scale = Math.min(Math.max(1, scale), 4);
+
+    updateTransform();
+  });
+
+  /* =========================
+     PINCH ZOOM (MOBILE)
+  ========================== */
+  if (PINCH_ENABLED) {
+    let lastDistance = null;
+
+    modal.addEventListener("touchmove", function(e) {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (lastDistance) {
+          const delta = distance - lastDistance;
+          scale += delta * 0.005;
+          scale = Math.min(Math.max(1, scale), 4);
+          updateTransform();
+        }
+
+        lastDistance = distance;
+      }
+    });
+
+    modal.addEventListener("touchend", () => {
+      lastDistance = null;
+    });
+  }
+
+  /* =========================
+     SMOOTH HOVER ZOOM (APPLE STYLE)
+  ========================== */
+  if (ZOOM_TYPE === "smooth") {
+    document.querySelectorAll(".zoomable").forEach(img => {
+
+      img.addEventListener("mousemove", function(e) {
+        const rect = img.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width * 100;
+        const y = (e.clientY - rect.top) / rect.height * 100;
+
+        img.style.transform = "scale(1.8)";
+        img.style.transformOrigin = `${x}% ${y}%`;
+        img.style.transition = "transform 0.2s ease-out";
+      });
+
+      img.addEventListener("mouseleave", function() {
+        img.style.transform = "scale(1)";
+        img.style.transformOrigin = "center";
+      });
+
+    });
+  }
+
+  /* =========================
+     APPLY TRANSFORM
+  ========================== */
+  function updateTransform() {
+    modalImg.style.transform = `translate(${pos.x}px, ${pos.y}px) scale(${scale})`;
+  }
+
+});
+</script>
 {% schema %}
 {
-  "name": "t:general.product",
-  "settings": [],
-  "disabled_on": {
-    "groups": ["header", "footer"]
-  }
+  "name": "Product",
+  "settings": [
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image Position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "image_width",
+      "label": "Image Width (%)",
+      "min": 40,
+      "max": 70,
+      "step": 5,
+      "default": 50
+    },
+    {
+      "type": "select",
+      "id": "gallery_style",
+      "label": "Gallery Style",
+      "options": [
+        { "value": "stacked", "label": "Stacked" },
+        { "value": "grid", "label": "Grid" },
+        { "value": "slider", "label": "Slider" }
+      ],
+      "default": "stacked"
+    },
+    {
+  "type": "select",
+  "id": "zoom_type",
+  "label": "Zoom Type",
+  "options": [
+    { "value": "none", "label": "None" },
+    { "value": "smooth", "label": "Smooth Zoom" },
+    { "value": "modal", "label": "Modal Zoom (with drag)" }
+  ],
+  "default": "modal"
+},
+{
+  "type": "checkbox",
+  "id": "enable_pinch",
+  "label": "Enable Pinch Zoom (Mobile)",
+  "default": true
+}
+  ],
+  "blocks": [
+    { "type": "@app" },
+    { "type": "@theme" }
+  ],
+  "presets": [
+    {
+      "name": "Product"
+    }
+  ]
 }
 {% endschema %}

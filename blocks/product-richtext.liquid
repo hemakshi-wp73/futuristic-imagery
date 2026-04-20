@@ -1,0 +1,21 @@
+<div {{ block.shopify_attributes }}>
+  {{ block.settings.text }}
+</div>
+
+{% schema %}
+{
+  "name": "Rich Text",
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text"
+    }
+  ],
+     "presets":[
+    {
+      "name": "Rich Text"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,15 @@
+<div {{ block.shopify_attributes }} class="product-price">
+  {{ product.selected_or_first_available_variant.price | money }}
+</div>
+
+{% schema %}
+{
+  "name": "Product Price",
+  "settings": [],
+    "presets":[
+    {
+      "name": "Product Price"
+    }
+  ]
+}
+{% endschema %}

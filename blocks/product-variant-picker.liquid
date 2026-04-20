@@ -1,0 +1,22 @@
+<div {{ block.shopify_attributes }}>
+  {% for option in product.options_with_values %}
+    <label>{{ option.name }}</label>
+    <select data-option-index="{{ forloop.index0 }}">
+      {% for value in option.values %}
+        <option value="{{ value }}">{{ value }}</option>
+      {% endfor %}
+    </select>
+  {% endfor %}
+</div>
+
+{% schema %}
+{
+  "name": "Variant Picker",
+  "settings": [],
+  "presets":[
+    {
+      "name": "Variant Picker"
+    }
+  ]
+}
+{% endschema %}

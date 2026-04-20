@@ -1,0 +1,15 @@
+<div {{ block.shopify_attributes }}>
+  <input type="number" name="quantity" min="1" value="1">
+</div>
+
+{% schema %}
+{
+  "name": "Quantity Selector",
+  "settings": [],
+   "presets":[
+    {
+      "name": "Quantity Selector"
+    }
+  ]
+}
+{% endschema %}
