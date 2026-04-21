@@ -42,5 +42,139 @@
 
     {% sections 'footer-group' %}
     {% render 'cart-drawer' %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('search-input');
+  const resultsBox = document.getElementById('search-results');
+
+  if (!input || !resultsBox) return;
+
+  function debounce(func, delay) {
+    let timeout;
+    return function (...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(this, args), delay);
+    };
+  }
+
+  input.addEventListener('input', debounce(async function () {
+    const query = this.value.trim();
+
+    if (query.length < 2) {
+      resultsBox.style.display = 'none';
+      resultsBox.innerHTML = '';
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `/search/suggest.json?q=${encodeURIComponent(query)}&resources[type]=product,collection,page,article`
+      );
+
+      const data = await res.json();
+      const results = data.resources.results;
+
+      const products = results.products || [];
+      const collections = results.collections || [];
+      const pages = results.pages || [];
+      const articles = results.articles || [];
+
+      let html = '';
+
+      // 🔥 EMPTY STATE
+      if (!products.length && !collections.length && !pages.length && !articles.length) {
+        html = `<p style="padding:10px">No results found</p>`;
+      } else {
+
+        // 🔥 PRODUCTS
+        if (products.length) {
+          html += `<div class="search-group"><h4>Products</h4>`;
+          products.forEach(p => {
+            html += `
+              <div class="search-item" onclick="window.location.href='${p.url}'">
+                ${p.featured_image ? `<img src="${p.featured_image.url}" width="40">` : ''}
+                <div>
+                  <p>${p.title}</p>
+                  ${p.price ? `<small>₹${p.price}</small>` : ''}
+                </div>
+              </div>
+            `;
+          }); 
+          html += `</div>`;
+        }
+
+        // 🔥 COLLECTIONS
+        if (collections.length) {
+          html += `<div class="search-group"><h4>Collections</h4>`;
+          collections.forEach(c => {
+            html += `
+              <div class="search-item" onclick="window.location.href='${c.url}'">
+                <p>${c.title}</p>
+              </div>
+            `;
+          });
+          html += `</div>`;
+        }
+
+        // 🔥 PAGES
+        if (pages.length) {
+          html += `<div class="search-group"><h4>Pages</h4>`;
+          pages.forEach(p => {
+            html += `
+              <div class="search-item" onclick="window.location.href='${p.url}'">
+                <p>${p.title}</p>
+              </div>
+            `;
+          });
+          html += `</div>`;
+        }
+
+        // 🔥 BLOG POSTS
+        if (articles.length) {
+          html += `<div class="search-group"><h4>Blog</h4>`;
+          articles.forEach(a => {
+            html += `
+              <div class="search-item" onclick="window.location.href='${a.url}'">
+                <p>${a.title}</p>
+              </div>
+            `;
+          });
+          html += `</div>`;
+        }
+      }
+
+      // 🔥 VIEW ALL RESULTS BUTTON (always shown)
+      const searchUrl = `/search?q=${encodeURIComponent(query)}&type=product,article,page,collection`;
+
+      html += `
+        <div class="search-view-all">
+          <a href="${searchUrl}">View all results →</a>
+        </div>
+      `;
+
+      resultsBox.innerHTML = html;
+      resultsBox.style.display = 'block';
+
+    } catch (err) {
+      console.error('Search error:', err);
+      resultsBox.innerHTML = `
+        <p style="padding:10px">Something went wrong</p>
+        <div class="search-view-all">
+          <a href="/search?q=${encodeURIComponent(input.value)}">View all results →</a>
+        </div>
+      `;
+      resultsBox.style.display = 'block';
+    }
+
+  }, 300));
+
+  // 🔥 CLICK OUTSIDE → CLOSE
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('.header__search')) {
+      resultsBox.style.display = 'none';
+    }
+  });
+});
+</script>
   </body>
 </html>

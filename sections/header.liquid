@@ -34,7 +34,14 @@
     {% for link in section.settings.menu.links %}
       {{ link.title | link_to: link.url }}
     {% endfor %}
+    <!-- 🔥 LIVE SEARCH START -->
+<div class="header__search">
+  <input type="text" id="search-input" placeholder="Search...">
+  <div id="search-results"></div>
+</div>
+<!-- 🔥 LIVE SEARCH END -->
   </div>
+
 
   <div class="header__icons">
     {% if shop.customer_accounts_enabled %}
@@ -53,6 +60,49 @@
 </header>
 
 {% style %}
+.header__search {
+  position: relative;
+  max-width: 250px;
+  width: 100%;
+}
+
+.header__search input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+#search-results {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #eee;
+  display: none;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 999;
+}
+
+.search-item {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.search-item:hover {
+  background: #f5f5f5;
+}
+
+/* 🔥 Make it responsive */
+@media (max-width: 767px) {
+  .header__search {
+    display: none;
+  }
+}
  .header__logo{
   margin: 0 !important;
  }
@@ -130,7 +180,22 @@
     display: block;
   }
 }
+.search-view-all {
+  padding: 10px;
+  text-align: center;
+  border-top: 1px solid #eee;
+}
 
+.search-view-all a {
+  text-decoration: none;
+  font-weight: 600;
+  display: block;
+  color: #000;
+}
+
+.search-view-all a:hover {
+  text-decoration: underline;
+}
 {% endstyle %}
 
 {% schema %}
