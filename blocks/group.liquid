@@ -10,7 +10,7 @@
         {% enddoc %}
 
         <div
-          class="group group--{{ block.settings.layout_direction }} color-{{ block.settings.color_scheme }}"
+          class="group group--{{ block.settings.layout_direction }} scheme-{{ block.settings.color_scheme }}"
           style="
             --group-width: {% if block.settings.width == 'custom' %}{{ block.settings.custom_width }}{{ block.settings.width_unit }}{% else %}{{ block.settings.width }}{% endif %};
             --padding-top-desktop: {{ block.settings.padding_top_desktop }}px;

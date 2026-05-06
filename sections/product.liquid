@@ -67,6 +67,11 @@
     <!-- PRODUCT INFO -->
     <div class="product-info" style="width: {{ 100 | minus: section.settings.image_width }}%;">
       {% content_for 'blocks' %}
+        {% content_for 'block',
+    type: '_product-details',
+    id: 'product-details',
+    closest.product: closest.product
+  %}
     </div>
 
   </div>
@@ -398,7 +403,15 @@ document.addEventListener("DOMContentLoaded", function () {
   ],
   "blocks": [
     { "type": "@app" },
-    { "type": "@theme" }
+    { "type": "@theme" },
+    { "type": "product-buy-buttons" },
+     { "type": "product-title" },
+      { "type": "product-quantity" },
+       { "type": "product-collapsible" },
+        { "type": "product-description" },
+         { "type": "product-price" },
+          { "type": "product-variant-picker" },
+           
   ],
   "presets": [
     {

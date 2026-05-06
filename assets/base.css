@@ -32,7 +32,7 @@
 
 .color-scheme {
   background-color: rgb(var(--color-background));
-  color: rgb(var(--color-text));
+  color: rgb(var(--color-foreground));
 }
 
 /* Text + links */
@@ -83,6 +83,12 @@
   border: var(--primary-button-border-width) solid rgb(var(--color-primary-button-border));
   text-decoration: none;
 }
+.button--primary:hover {
+  background-color: rgb(var(--color-primary-button-hover));
+  color: rgb(var(--color-on-primary-button-hover));
+  border: var(--primary-button-border-width) solid rgb(var(--color-primary-button-border-hover));
+  text-decoration: none;
+}
 
 .button--secondary {
   background-color: rgb(var(--color-secondary-button));
@@ -90,10 +96,24 @@
   border: var(--secondary-button-border-width) solid rgb(var(--color-secondary-button-border));
   text-decoration: none;
 }
+.button--secondary:hover {
+  background-color: rgb(var(--color-secondary-button-hover));
+  color: rgb(var(--color-on-secondary-button-hover));
+  border: var(--secondary-button-border-width) solid rgb(var(--color-secondary-button-border-hover));
+  text-decoration: none;
+}
+
 .button--outline {
   color: rgb(var(--color-outline_button_text));
   text-decoration-line: underline;
   text-decoration-color: rgb(var(--color-outline_button_border));
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px; 
+}
+.button--outline:hover {
+  color: rgb(var(--color-outline_button_text-hover));
+  text-decoration-line: underline;
+  text-decoration-color: rgb(var(--color-outline_button_border-hover));
   text-decoration-thickness: 2px;
   text-underline-offset: 6px; 
 }

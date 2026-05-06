@@ -73,7 +73,27 @@
             "default": "#000F9F",
             "alpha": true
           },
-
+           {
+            "type": "color",
+            "id": "primary_button_hover_background",
+            "label": "Hover Background",
+            "default": "#FFFFFF",
+            "alpha": true
+          },
+  {
+            "type": "color",
+            "id": "primary_button_hover_text",
+            "label": "Hover Text",
+            "default": "#000F9F",
+            "alpha": true
+          },
+          {
+            "type": "color",
+            "id": "primary_button_hover_border",
+            "label": "Hover Border",
+            "default": "#000F9F",
+            "alpha": true
+          },
           {
             "type": "header",
             "content": "Secondary button"
@@ -99,6 +119,27 @@
             "default": "#000000",
             "alpha": true
           },
+            {
+              "type": "color",
+              "id": "secondary_button_hover_background",
+              "label": "Hover Background",
+              "default": "#000000",
+              "alpha": true
+            },
+            {
+              "type": "color",
+              "id": "secondary_button_hover_text",
+              "label": "Hover Text",
+              "default": "#FFFFFF",
+              "alpha": true
+            },
+            {
+              "type": "color",
+              "id": "secondary_button_hover_border",
+              "label": "Hover Border",
+              "default": "#000000",
+              "alpha": true
+            },
           {
             "type": "header",
             "content": "Outline button"
@@ -116,7 +157,21 @@
             "label": "Border",
             "default": "#000000",
             "alpha": true
-          }
+          },
+            {
+                "type": "color",
+                "id": "outline_button_hover_text",
+                "label": "Hover Text",
+                "default": "#FFFFFF",
+                "alpha": true
+              },
+              {
+                "type": "color",
+                "id": "outline_button_hover_border",
+                "label": "Hover Border",
+                "default": "#000000",
+                "alpha": true
+              }
         ],
         "role": {
           "background": "background",

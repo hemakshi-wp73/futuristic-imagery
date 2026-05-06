@@ -15,14 +15,24 @@
           "background": "#FFFFFF",
           "foreground": "#000000",
           "primary": "#000F9F",
+          "outline_button_text": "#000000",
+          "outline_button_border": "#000000",
+          "outline_button_hover_text": "#FFFFFF",
+          "outline_button_hover_border": "#000000",
 
           "primary_button_background": "#000F9F",
           "primary_button_text": "#FFFFFF",
           "primary_button_border": "#000F9F",
+          "primary_button_hover_background": "#FFFFFF",
+          "primary_button_hover_text": "#000F9F",
+          "primary_button_hover_border": "#000F9F",
 
           "secondary_button_background": "#FFFFFF",
           "secondary_button_text": "#000000",
-          "secondary_button_border": "#000000"
+          "secondary_button_border": "#000000",
+          "secondary_button_hover_background": "#000000",
+          "secondary_button_hover_text": "#FFFFFF",
+          "secondary_button_hover_border": "#000000"
         }
       }
     }

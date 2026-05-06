@@ -1,12 +1,12 @@
 <div
   class="main-button"
-  style="margin-right: 12px;"
+  style="margin-right: 12px; display: inline-flex; gap: 10px; flex-wrap: wrap;"
   {{ block.shopify_attributes }}
 >
-  {% if block.settings.label != blank %}
+  {% if block.settings.label != blank or block.settings.link != blank %}
     <a
       href="{{ block.settings.link }}"
-      class="button button--{{ block.settings.style }}  
+      class="button button--{{ block.settings.style }}    
        {% if block.settings.button_width == 'fit' %}button--fit{% endif %}
   {% if block.settings.button_width == 'full' %}button--full{% endif %}
   {% if block.settings.button_width == 'custom' %}button--custom{% endif %}"
@@ -17,6 +17,23 @@
   "
     >
       {{ block.settings.label }}
+    </a>
+  {% endif %}
+
+  {% if block.settings.label_2 != blank or block.settings.link_2 != blank %}
+    <a
+      href="{{ block.settings.link_2 }}"
+      class="button button--{{ block.settings.style_2 }} 
+       {% if block.settings.button_width_2 == 'fit' %}button--fit{% endif %}
+  {% if block.settings.button_width_2 == 'full' %}button--full{% endif %}
+  {% if block.settings.button_width_2 == 'custom' %}button--custom{% endif %}"
+  style="
+    {% if block.settings.button_width_2 == 'custom' %}
+      --button-custom-width: {{ block.settings.custom_button_width_2 }}px;
+    {% endif %}
+  "
+    >
+      {{ block.settings.label_2 }}
     </a>
   {% endif %}
 </div>
@@ -67,6 +84,53 @@
   "step": 10,
   "default": 200,
   "visible_if": "{{ block.settings.button_width == \"custom\" }}"
+},
+{
+  "type": "header",
+  "content": "Button 2"
+},
+{
+  "type": "text",
+  "id": "label_2",
+  "label": "Button 2 label",
+  "default": "Shop now"
+},
+{
+  "type": "url",
+  "id": "link_2",
+  "label": "Button 2 link"
+},
+{
+  "type": "select",
+  "id": "style_2",
+  "label": "Button 2 style",
+  "default": "secondary",
+  "options": [
+    { "value": "primary", "label": "Primary" },
+    { "value": "secondary", "label": "Secondary" },
+    { "value": "outline", "label": "Outline" }
+  ]
+},
+{
+  "type": "select",
+  "id": "button_width_2",
+  "label": "Button 2 width",
+  "default": "fit",
+  "options": [
+    { "value": "fit", "label": "Fit content" },
+    { "value": "custom", "label": "Custom width" },
+    { "value": "full", "label": "Full width" }
+  ]
+},
+{
+  "type": "range",
+  "id": "custom_button_width_2",
+  "label": "Custom button 2 width (px)",
+  "min": 80,
+  "max": 600,
+  "step": 10,
+  "default": 200,
+  "visible_if": "{{ block.settings.button_width_2 == \"custom\" }}"
 }
 
 
@@ -76,4 +140,3 @@
   ]
 }
 {% endschema %}
- 

@@ -1,0 +1,472 @@
+{%- comment -%}
+  Block Name: Image/Video
+  Description: A reusable block for rendering responsive image or video media with separate desktop and mobile controls.
+{%- endcomment -%}
+
+{%- liquid
+  assign block_id = block.id | default: section.id | append: '-media-block'
+
+  # Desktop variables
+  assign desktop_media_type = block.settings.desktop_media_type
+  assign desktop_image = block.settings.desktop_image
+  assign desktop_video = block.settings.desktop_video
+  assign desktop_video_url = block.settings.desktop_video_url
+  assign desktop_padding_top = block.settings.desktop_padding_top
+  assign desktop_padding_bottom = block.settings.desktop_padding_bottom
+    
+  # Mobile variables
+  assign mobile_media_type = block.settings.mobile_media_type 
+  assign mobile_image = block.settings.mobile_image
+  assign mobile_video = block.settings.mobile_video
+  assign mobile_video_url = block.settings.mobile_video_url
+  assign mobile_padding_top = block.settings.mobile_padding_top
+  assign mobile_padding_bottom = block.settings.mobile_padding_bottom
+
+  # Video settings
+  assign video_autoplay = block.settings.video_autoplay
+  assign video_loop = block.settings.video_loop
+  assign video_muted = block.settings.video_muted
+  assign video_controls = block.settings.video_controls
+  assign video_poster = block.settings.video_poster
+
+  # Video Query Parameters
+  assign autoplay_param = '0'
+  if video_autoplay
+    assign autoplay_param = '1'
+  endif
+
+  assign loop_param = '0'
+  if video_loop
+    assign loop_param = '1'
+  endif
+
+  assign muted_param = '0'
+  if video_muted
+    assign muted_param = '1'
+  endif
+
+  assign controls_param = '0'
+  if video_controls
+    assign controls_param = '1'
+  endif
+-%}
+
+{%- style -%}
+  {%- assign desktop_height_setting = block.settings.height_desktop -%}
+  {%- assign desktop_height = 'auto' -%}
+  {%- if desktop_height_setting == 'small' -%}
+    {%- assign desktop_height = '300px' -%}
+  {%- elsif desktop_height_setting == 'medium' -%}
+    {%- assign desktop_height = '500px' -%}
+  {%- elsif desktop_height_setting == 'large' -%}
+    {%- assign desktop_height = '700px' -%}
+  {%- elsif desktop_height_setting == 'custom' -%}
+    {%- assign desktop_height = block.settings.custom_height_desktop -%}
+  {%- endif -%}
+
+  {%- assign mobile_height_setting = block.settings.height_mobile -%}
+  {%- assign mobile_height = 'auto' -%}
+  {%- if mobile_height_setting == 'small' -%}
+    {%- assign mobile_height = '200px' -%}
+  {%- elsif mobile_height_setting == 'medium' -%}
+    {%- assign mobile_height = '400px' -%}
+  {%- elsif mobile_height_setting == 'large' -%}
+    {%- assign mobile_height = '600px' -%}
+  {%- elsif mobile_height_setting == 'custom' -%}
+    {%- assign mobile_height = block.settings.custom_height_mobile -%}
+  {%- endif -%}
+
+  .block-{{ block_id }} {
+    padding-top: {{ mobile_padding_top }}px;
+    padding-bottom: {{ mobile_padding_bottom }}px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .block-{{ block_id }} .media-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: {{ mobile_height }};
+  }
+
+  .block-{{ block_id }} .media-element {
+    display: block;
+    width: 100%;
+    height: {% if mobile_height == 'auto' %}auto{% else %}100%{% endif %};
+    object-fit: cover;
+    max-width: 100%;
+  }
+
+  .block-{{ block_id }} .media-element--iframe {
+    border: none;
+    {% if mobile_height == 'auto' %}
+    aspect-ratio: 16 / 9;
+    {% endif %}
+  }
+
+  .block-{{ block_id }} .media-desktop {
+    display: none;
+  }
+  .block-{{ block_id }} .media-mobile {
+    display: flex;
+  }
+
+  @media screen and (min-width: 768px) {
+    .block-{{ block_id }} {
+      padding-top: {{ desktop_padding_top }}px;
+      padding-bottom: {{ desktop_padding_bottom }}px;
+    }
+
+    .block-{{ block_id }} .media-desktop {
+      display: flex;
+    }
+    .block-{{ block_id }} .media-mobile {
+      display: none;
+    }
+
+    .block-{{ block_id }} .media-wrapper {
+      height: {{ desktop_height }};
+    }
+    
+    .block-{{ block_id }} .media-element {
+      height: {% if desktop_height == 'auto' %}auto{% else %}100%{% endif %};
+    }
+
+    .block-{{ block_id }} .media-element--iframe {
+      {% if desktop_height == 'auto' %}
+      aspect-ratio: 16 / 9;
+      {% else %}
+      aspect-ratio: auto;
+      {% endif %}
+    }
+  }
+
+  .block-{{ block_id }} .placeholder-svg {
+    background-color: #f3f3f3;
+    color: #999;
+    width: 100%;
+    height: {% if mobile_height == 'auto' %}auto{% else %}100%{% endif %};
+    aspect-ratio: 16 / 9;
+  }
+  @media screen and (min-width: 768px) {
+    .block-{{ block_id }} .placeholder-svg {
+       height: {% if desktop_height == 'auto' %}auto{% else %}100%{% endif %};
+    }
+  }
+{%- endstyle -%}
+
+<div class="block-{{ block_id }}" {{ block.shopify_attributes }}>
+  
+  {%- comment -%} Mobile Media {%- endcomment -%}
+  <div class="media-wrapper media-mobile">
+    {%- if mobile_media_type == 'image' -%}
+      {%- if mobile_image != blank -%}
+        {{ mobile_image | image_url: width: 1500 | image_tag: 
+            class: 'media-element', 
+            loading: 'lazy', 
+            widths: '375, 550, 750, 1100, 1500', 
+            alt: mobile_image.alt | escape 
+        }}
+      {%- else -%}
+        {{ 'detailed-apparel-1' | placeholder_svg_tag: 'media-element placeholder-svg' }}
+      {%- endif -%}
+    {%- elsif mobile_media_type == 'video' -%}
+      {%- if mobile_video != blank -%}
+        {{ mobile_video | video_tag: 
+            class: 'media-element', 
+            autoplay: video_autoplay, 
+            loop: video_loop, 
+            muted: video_muted, 
+            controls: video_controls, 
+            image_size: '1500x', 
+            poster: video_poster 
+        }}
+      {%- elsif mobile_video_url != blank -%}
+        {%- if mobile_video_url.type == 'youtube' -%}
+          <iframe src="https://www.youtube.com/embed/{{ mobile_video_url.id }}?autoplay={{ autoplay_param }}&loop={{ loop_param }}&playlist={{ mobile_video_url.id }}&mute={{ muted_param }}&controls={{ controls_param }}" class="media-element media-element--iframe" allow="autoplay; encrypted-media" allowfullscreen title="Mobile Video"></iframe>
+        {%- else -%}
+          <iframe src="https://player.vimeo.com/video/{{ mobile_video_url.id }}?autoplay={{ autoplay_param }}&loop={{ loop_param }}&muted={{ muted_param }}&controls={{ controls_param }}" class="media-element media-element--iframe" allow="autoplay; encrypted-media" allowfullscreen title="Mobile Video"></iframe>
+        {%- endif -%}
+      {%- else -%}
+        {{ 'lifestyle-1' | placeholder_svg_tag: 'media-element placeholder-svg' }}
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} Desktop Media {%- endcomment -%}
+  <div class="media-wrapper media-desktop">
+    {%- if desktop_media_type == 'image' -%}
+      {%- if desktop_image != blank -%}
+        {{ desktop_image | image_url: width: 3000 | image_tag: 
+            class: 'media-element', 
+            loading: 'lazy', 
+            widths: '750, 1100, 1500, 2000, 3000', 
+            alt: desktop_image.alt | escape 
+        }}
+      {%- else -%}
+        {{ 'detailed-apparel-1' | placeholder_svg_tag: 'media-element placeholder-svg' }}
+      {%- endif -%}
+    {%- elsif desktop_media_type == 'video' -%}
+      {%- if desktop_video != blank -%}
+        {{ desktop_video | video_tag: 
+            class: 'media-element', 
+            autoplay: video_autoplay, 
+            loop: video_loop, 
+            muted: video_muted, 
+            controls: video_controls, 
+            image_size: '3000x', 
+            poster: video_poster 
+        }}
+      {%- elsif desktop_video_url != blank -%}
+        {%- if desktop_video_url.type == 'youtube' -%}
+          <iframe src="https://www.youtube.com/embed/{{ desktop_video_url.id }}?autoplay={{ autoplay_param }}&loop={{ loop_param }}&playlist={{ desktop_video_url.id }}&mute={{ muted_param }}&controls={{ controls_param }}" class="media-element media-element--iframe" allow="autoplay; encrypted-media" allowfullscreen title="Desktop Video"></iframe>
+        {%- else -%} 
+          <iframe src="https://player.vimeo.com/video/{{ desktop_video_url.id }}?autoplay={{ autoplay_param }}&loop={{ loop_param }}&muted={{ muted_param }}&controls={{ controls_param }}" class="media-element media-element--iframe" allow="autoplay; encrypted-media" allowfullscreen title="Desktop Video"></iframe>
+        {%- endif -%}
+      {%- else -%}
+        {{ 'lifestyle-1' | placeholder_svg_tag: 'media-element placeholder-svg' }}
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+
+</div>
+
+{% schema %}
+{
+  "name": "Image/Video Media",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Desktop Settings"
+    },
+    {
+      "type": "select",
+      "id": "desktop_media_type",
+      "label": "Desktop Media Type",
+      "options": [
+        {
+          "value": "image",
+          "label": "Image"
+        },
+        {
+          "value": "video",
+          "label": "Video"
+        }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "desktop_image",
+      "label": "Desktop Image"
+    },
+    {
+      "type": "video",
+      "id": "desktop_video",
+      "label": "Desktop Hosted Video",
+      "info": "Overrides external video URL if selected."
+    },
+    {
+      "type": "video_url",
+      "id": "desktop_video_url",
+      "accept": ["youtube", "vimeo"],
+      "label": "Desktop External Video URL",
+      "info": "Used if hosted video is empty."
+    },
+    {
+      "type": "select",
+      "id": "height_desktop",
+      "label": "Desktop Height",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "Adapt to Media"
+        },
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        },
+        {
+          "value": "custom",
+          "label": "Custom Height"
+        }
+      ],
+      "default": "adapt"
+    },
+    {
+      "type": "text",
+      "id": "custom_height_desktop",
+      "label": "Desktop Custom Height (px or vh)",
+      "info": "Applies only if 'Custom Height' is selected. E.g., '600px' or '80vh'.",
+      "default": "600px"
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Desktop Padding Top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Desktop Padding Bottom",
+      "default": 36
+    },
+    {
+      "type": "header",
+      "content": "Mobile Settings"
+    },
+    {
+      "type": "select",
+      "id": "mobile_media_type",
+      "label": "Mobile Media Type",
+      "options": [
+        {
+          "value": "image",
+          "label": "Image"
+        },
+        {
+          "value": "video",
+          "label": "Video"
+        }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "Mobile Image"
+    },
+    {
+      "type": "video",
+      "id": "mobile_video",
+      "label": "Mobile Hosted Video",
+      "info": "Overrides external video URL if selected."
+    },
+    {
+      "type": "video_url",
+      "id": "mobile_video_url",
+      "accept": ["youtube", "vimeo"],
+      "label": "Mobile External Video URL",
+      "info": "Used if hosted video is empty."
+    },
+    {
+      "type": "select",
+      "id": "height_mobile",
+      "label": "Mobile Height",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "Adapt to Media"
+        },
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        },
+        {
+          "value": "custom",
+          "label": "Custom Height"
+        }
+      ],
+      "default": "adapt"
+    },
+    {
+      "type": "text",
+      "id": "custom_height_mobile",
+      "label": "Mobile Custom Height (px or vh)",
+      "info": "Applies only if 'Custom Height' is selected. E.g., '400px' or '50vh'.",
+      "default": "400px"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Mobile Padding Top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Mobile Padding Bottom",
+      "default": 36
+    },
+    {
+      "type": "header",
+      "content": "Video Options"
+    },
+    {
+      "type": "checkbox",
+      "id": "video_autoplay",
+      "label": "Autoplay",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "video_loop",
+      "label": "Loop",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "video_muted",
+      "label": "Muted",
+      "default": true,
+      "info": "Autoplay generally requires videos to be muted."
+    },
+    {
+      "type": "checkbox",
+      "id": "video_controls",
+      "label": "Show Controls",
+      "default": false
+    },
+    {
+      "type": "image_picker",
+      "id": "video_poster",
+      "label": "Video Poster Image",
+      "info": "Used for hosted videos before they play."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image/Video Media"
+    }
+  ]
+}
+{% endschema %}
