@@ -1,0 +1,909 @@
+{%- comment -%}
+  Story Timeline Section
+  Premium, modern storytelling section with vertical timeline, sticky media, and smooth animations.
+{%- endcomment -%}
+
+{%- liquid
+  assign sec_id = section.id
+  assign set = section.settings
+  assign bg_color = set.background_color
+  assign heading_color = set.heading_color
+  assign text_color = set.text_color
+  assign line_color = set.timeline_line_color
+  assign active_color = set.active_dot_color
+  
+  assign is_page_width = true
+  if set.section_width == 'full_width'
+    assign is_page_width = false
+  endif
+-%}
+
+{%- style -%}
+  #shopify-section-{{ sec_id }} {
+    --bg-color: {{ bg_color }};
+    --heading-color: {{ heading_color }};
+    --text-color: {{ text_color }};
+    --line-color: {{ line_color }};
+    --active-color: {{ active_color }};
+    
+    --pt-desktop: {{ set.padding_top_desktop }}px;
+    --pb-desktop: {{ set.padding_bottom_desktop }}px;
+    --pt-mobile: {{ set.padding_top_mobile }}px;
+    --pb-mobile: {{ set.padding_bottom_mobile }}px;
+    
+    --dot-size: {{ set.dot_size }}px;
+    --border-radius: {{ set.border_radius }}px;
+    
+    --content-width: {{ set.content_width }}%;
+    --image-width: {{ set.image_width }}%;
+    
+    background-color: var(--bg-color);
+  }
+
+  .st-section-{{ sec_id }} {
+    padding-top: var(--pt-mobile);
+    padding-bottom: var(--pb-mobile);
+    overflow: hidden; /* prevent horizontal scroll from animations */
+  }
+
+  @media screen and (min-width: 769px) {
+    .st-section-{{ sec_id }} {
+      padding-top: var(--pt-desktop);
+      padding-bottom: var(--pb-desktop);
+    }
+  }
+
+  /* Core Layout */
+  .st-container {
+    margin: 0 auto;
+    padding: 0 20px;
+    max-width: var(--page-width, 1200px);
+  }
+  .st-container.full-width {
+    max-width: 100%;
+    padding: 0;
+  }
+  
+  .st-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .st-header h2 {
+    color: var(--heading-color);
+    margin: 0 0 15px;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 600;
+  }
+  .st-header p {
+    color: var(--text-color);
+    margin: 0;
+    font-size: 1.1rem;
+    opacity: 0.8;
+  }
+
+  /* Desktop Grid */
+  .st-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  @media screen and (min-width: 769px) {
+    .st-grid {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 5%;
+    }
+    .st-left-col {
+      width: var(--content-width);
+      position: relative;
+    }
+    .st-right-col {
+      width: var(--image-width);
+      position: sticky;
+      top: 100px; /* offset from header */
+      height: 80vh;
+      min-height: 500px;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+    }
+  }
+
+  /* Timeline Elements */
+  .st-timeline-wrapper {
+    position: relative;
+    padding-left: calc(var(--dot-size) + 30px);
+  }
+  
+  .st-timeline-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(var(--dot-size) / 2 - 1px); /* Center line behind dots */
+    width: 2px;
+    background: var(--line-color);
+    z-index: 1;
+  }
+  
+  .st-timeline-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: var(--active-color);
+    height: 0%;
+    transform-origin: top;
+    transition: height 0.1s linear;
+  }
+
+  .st-item {
+    position: relative;
+    margin-bottom: 80px;
+    z-index: 2;
+    transition: all 0.4s ease;
+  }
+  .st-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .st-dot {
+    position: absolute;
+    left: calc(-30px - var(--dot-size));
+    top: 0;
+    width: var(--dot-size);
+    height: var(--dot-size);
+    border-radius: 50%;
+    background: var(--bg-color);
+    border: 2px solid var(--line-color);
+    transition: all 0.4s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .st-dot svg, .st-dot img {
+    width: 50%;
+    height: 50%;
+    object-fit: contain;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .st-item.is-active .st-dot {
+    background: var(--active-color);
+    border-color: var(--active-color);
+    transform: scale(1.2);
+  }
+  .st-item.is-active .st-dot svg,
+  .st-item.is-active .st-dot img {
+    opacity: 1;
+    filter: brightness(0) invert(1);
+  }
+
+  /* Card Content */
+  .st-card {
+    border-radius: var(--border-radius);
+    padding: 30px;
+    transition: all 0.4s ease;
+  }
+  .st-card.glassmorphism {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .st-card.hover-effect:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.05);
+  }
+
+  .st-item-year {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--active-color);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .st-item-title {
+    color: var(--heading-color);
+    font-size: 1.8rem;
+    margin: 0 0 15px;
+    line-height: 1.2;
+  }
+
+  .st-item-text {
+    color: var(--text-color);
+    font-size: 1rem;
+    line-height: 1.6;
+    opacity: 0.8;
+  }
+  .st-item-text p {
+    margin-bottom: 1em;
+  }
+  .st-item-text p:last-child {
+    margin-bottom: 0;
+  }
+
+  .st-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 28px;
+    background: var(--heading-color);
+    color: var(--bg-color);
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+  .st-btn:hover {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+
+  /* Media Area (Sticky) */
+  .st-media-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+  }
+  .st-media-item {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(1.05);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .st-media-item.is-active {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+    z-index: 2;
+  }
+  .st-media-item img, .st-media-item video, .st-media-item iframe {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--border-radius);
+  }
+
+  /* Mobile Overrides */
+  .st-mobile-media {
+    display: none;
+    margin-top: 20px;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+  }
+  .st-mobile-media img, .st-mobile-media video {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+
+  @media screen and (max-width: 768px) {
+    .st-right-col {
+      display: none; /* Hide sticky area on mobile */
+    }
+    .st-mobile-media {
+      display: block; /* Show media inside blocks */
+    }
+    
+    .st-layout-slider .st-timeline-wrapper {
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding-bottom: 20px;
+      padding-left: 0;
+      gap: 20px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .st-layout-slider .st-timeline-wrapper::-webkit-scrollbar {
+      display: none;
+    }
+    .st-layout-slider .st-timeline-line {
+      display: none;
+    }
+    .st-layout-slider .st-item {
+      scroll-snap-align: center;
+      flex: 0 0 85%;
+      margin-bottom: 0;
+    }
+    .st-layout-slider .st-dot {
+      display: none; /* hide dots in slider mode */
+    }
+  }
+
+  /* Animations */
+  .st-anim-fade-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .st-anim-fade-up.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .st-anim-slide-in {
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .st-anim-slide-in.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  
+  .st-anim-scale {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .st-anim-scale.is-visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* Overlay */
+  .st-overlay {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    pointer-events: none;
+    z-index: 1;
+  }
+{%- endstyle -%}
+
+<div class="st-section-{{ sec_id }}" data-section-id="{{ sec_id }}">
+  <div class="st-container {% if is_page_width == false %}full-width{% endif %}">
+    
+    {%- if set.heading != blank or set.subheading != blank -%}
+      <div class="st-header {% if set.enable_animations %}st-anim-fade-up{% endif %}">
+        {%- if set.heading != blank -%}
+          <h2>{{ set.heading }}</h2>
+        {%- endif -%}
+        {%- if set.subheading != blank -%}
+          <p>{{ set.subheading }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="st-grid st-layout-{{ set.mobile_layout }}">
+      
+      <!-- Left Column: Timeline -->
+      <div class="st-left-col">
+        <div class="st-timeline-wrapper" id="st-timeline-wrapper-{{ sec_id }}">
+          
+          <div class="st-timeline-line">
+            {%- if set.enable_scroll_progress -%}
+              <div class="st-timeline-progress" id="st-progress-{{ sec_id }}"></div>
+            {%- endif -%}
+          </div>
+
+          {%- for block in section.blocks -%}
+            {%- assign b_set = block.settings -%}
+            
+            <div class="st-item {% if forloop.first %}is-active{% endif %} {{ b_set.custom_class }}" 
+                 data-index="{{ forloop.index0 }}" 
+                 {{ block.shopify_attributes }}>
+              
+              <!-- Timeline Dot -->
+              <div class="st-dot" {% if b_set.custom_dot_color != blank and b_set.custom_dot_color != 'rgba(0,0,0,0)' %}style="--active-color: {{ b_set.custom_dot_color }};"{% endif %}>
+                {%- if b_set.icon != blank -%}
+                  <img src="{{ b_set.icon | image_url: width: 60 }}" alt="icon" loading="lazy" width="30" height="30">
+                {%- endif -%}
+              </div>
+
+              <!-- Card Content -->
+              <div class="st-card 
+                  {% if set.enable_glassmorphism %}glassmorphism{% endif %} 
+                  {% if set.enable_hover_effects %}hover-effect{% endif %} 
+                  {% if set.enable_animations %}st-anim-{{ b_set.animation_style }}{% endif %}"
+                  style="text-align: {{ b_set.text_alignment }}; {% if b_set.bg_card_color != blank and b_set.bg_card_color != 'rgba(0,0,0,0)' %}background-color: {{ b_set.bg_card_color }};{% endif %}">
+                
+                {%- if b_set.year_text != blank -%}
+                  <span class="st-item-year">{{ b_set.year_text }}</span>
+                {%- endif -%}
+                
+                {%- if b_set.title != blank -%}
+                  <h3 class="st-item-title">{{ b_set.title }}</h3>
+                {%- endif -%}
+                
+                {%- if b_set.description != blank -%}
+                  <div class="st-item-text">{{ b_set.description }}</div>
+                {%- endif -%}
+
+                {%- if b_set.enable_cta and b_set.btn_label != blank -%}
+                  <a href="{{ b_set.btn_link }}" class="st-btn">{{ b_set.btn_label }}</a>
+                {%- endif -%}
+
+                <!-- Mobile Media (Displays only on mobile stacked layout) -->
+                <div class="st-mobile-media">
+                  {%- if b_set.video != blank -%}
+                    {{ b_set.video | video_tag: autoplay: true, loop: true, muted: true, controls: false, image_size: '600x' }}
+                  {%- elsif b_set.mobile_image != blank -%}
+                    <img src="{{ b_set.mobile_image | image_url: width: 800 }}" alt="{{ b_set.mobile_image.alt | escape }}" loading="lazy" width="800" height="auto">
+                  {%- elsif b_set.desktop_image != blank -%}
+                    <img src="{{ b_set.desktop_image | image_url: width: 800 }}" alt="{{ b_set.desktop_image.alt | escape }}" loading="lazy" width="800" height="auto">
+                  {%- else -%}
+                    {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                  {%- endif -%}
+                </div>
+                
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+
+      <!-- Right Column: Sticky Media -->
+      <div class="st-right-col">
+        {%- if set.enable_sticky_image -%}
+          <div class="st-media-container">
+            {%- for block in section.blocks -%}
+              {%- assign b_set = block.settings -%}
+              
+              <div class="st-media-item {% if forloop.first %}is-active{% endif %}" data-media-index="{{ forloop.index0 }}">
+                <div class="st-overlay" style="opacity: {{ b_set.overlay_opacity | divided_by: 100.0 }};"></div>
+                
+                {%- if b_set.video != blank -%}
+                  {{ b_set.video | video_tag: autoplay: true, loop: true, muted: true, controls: false, image_size: '1200x' }}
+                {%- elsif b_set.desktop_image != blank -%}
+                  <img src="{{ b_set.desktop_image | image_url: width: 1400 }}" 
+                       alt="{{ b_set.desktop_image.alt | escape }}" 
+                       loading="{% if forloop.first %}eager{% else %}lazy{% endif %}" 
+                       style="object-position: {{ b_set.image_position }};"
+                       width="1400" height="auto">
+                {%- else -%}
+                  {{ 'collection-' | append: forloop.index | placeholder_svg_tag: 'placeholder-svg' }}
+                {%- endif -%}
+              </div>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const sectionId = '{{ sec_id }}';
+    const section = document.querySelector(`.st-section-${sectionId}`);
+    if (!section) return;
+
+    const timelineItems = section.querySelectorAll('.st-item');
+    const mediaItems = section.querySelectorAll('.st-media-item');
+    const progressBar = section.querySelector(`#st-progress-${sectionId}`);
+    const timelineWrapper = section.querySelector(`#st-timeline-wrapper-${sectionId}`);
+    
+    let isDesktop = window.innerWidth > 768;
+
+    // Handle scroll animations (fade-up, slide-in, etc)
+    if ('{{ set.enable_animations }}' === 'true') {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+
+      section.querySelectorAll('.st-anim-fade-up, .st-anim-slide-in, .st-anim-scale').forEach(el => {
+        observer.observe(el);
+      });
+    }
+
+    // Scroll Progress Logic
+    const updateProgress = () => {
+      if (!isDesktop || !progressBar || !timelineWrapper) return;
+      
+      const wrapperRect = timelineWrapper.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      
+      // Calculate how far we've scrolled within the timeline wrapper
+      const scrollStart = wrapperRect.top - (windowHeight / 2);
+      const scrollDistance = wrapperRect.height;
+      
+      let progress = 0;
+      if (scrollStart < 0) {
+        progress = Math.min(100, Math.max(0, (Math.abs(scrollStart) / scrollDistance) * 100));
+      }
+      
+      progressBar.style.height = `${progress}%`;
+    };
+
+    // Active Item Intersection Observer (for sticky image change & active states)
+    const itemObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const index = entry.target.getAttribute('data-index');
+          
+          // Update timeline item active state
+          timelineItems.forEach(item => item.classList.remove('is-active'));
+          entry.target.classList.add('is-active');
+
+          // Update sticky media active state
+          if (mediaItems.length > 0) {
+            mediaItems.forEach(media => media.classList.remove('is-active'));
+            const activeMedia = section.querySelector(`.st-media-item[data-media-index="${index}"]`);
+            if (activeMedia) activeMedia.classList.add('is-active');
+          }
+        }
+      });
+    }, {
+      rootMargin: "-40% 0px -40% 0px", // Trigger when item is roughly in the middle 20% of screen
+      threshold: 0
+    });
+
+    timelineItems.forEach(item => itemObserver.observe(item));
+
+    window.addEventListener('scroll', () => {
+      requestAnimationFrame(updateProgress);
+    });
+    
+    window.addEventListener('resize', () => {
+      isDesktop = window.innerWidth > 768;
+    });
+
+    // Initial check
+    updateProgress();
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Story Timeline",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Header"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Our Journey"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Discover the milestones that shaped our brand."
+    },
+    {
+      "type": "header",
+      "content": "Layout Settings"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section Width",
+      "options": [
+        { "value": "full_width", "label": "Full Width" },
+        { "value": "page_width", "label": "Page Width" }
+      ],
+      "default": "page_width"
+    },
+    {
+      "type": "range",
+      "id": "content_width",
+      "min": 30,
+      "max": 70,
+      "step": 5,
+      "unit": "%",
+      "label": "Desktop Content Width",
+      "default": 45
+    },
+    {
+      "type": "range",
+      "id": "image_width",
+      "min": 30,
+      "max": 70,
+      "step": 5,
+      "unit": "%",
+      "label": "Desktop Image Width",
+      "default": 50
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile Layout Style",
+      "options": [
+        { "value": "stacked", "label": "Stacked" },
+        { "value": "slider", "label": "Slider" }
+      ],
+      "default": "stacked"
+    },
+    {
+      "type": "header",
+      "content": "Design & Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#F9F9F9"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#555555"
+    },
+    {
+      "type": "color",
+      "id": "timeline_line_color",
+      "label": "Timeline Line Color",
+      "default": "#E5E5E5"
+    },
+    {
+      "type": "color",
+      "id": "active_dot_color",
+      "label": "Active Dot Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "label": "Border Radius",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "dot_size",
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "label": "Timeline Dot Size",
+      "default": 20
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_glassmorphism",
+      "label": "Enable Glassmorphism Card Style",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_hover_effects",
+      "label": "Enable Card Hover Effects",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Features"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sticky_image",
+      "label": "Enable Sticky Image Area (Desktop)",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_scroll_progress",
+      "label": "Enable Scroll Progress Line",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_animations",
+      "label": "Enable Entrance Animations",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Desktop Padding Top",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Desktop Padding Bottom",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Mobile Padding Top",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Mobile Padding Bottom",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "timeline_item",
+      "name": "Timeline Event",
+      "settings": [
+        {
+          "type": "text",
+          "id": "year_text",
+          "label": "Year / Date Text",
+          "default": "2024"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "A New Beginning"
+        },
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Description",
+          "default": "<p>Describe this milestone in your brand's history.</p>"
+        },
+        {
+          "type": "header",
+          "content": "Media"
+        },
+        {
+          "type": "image_picker",
+          "id": "desktop_image",
+          "label": "Desktop Image"
+        },
+        {
+          "type": "image_picker",
+          "id": "mobile_image",
+          "label": "Mobile Image (Optional)",
+          "info": "Overrides desktop image on mobile stacked layout."
+        },
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Video (Overrides Image)"
+        },
+        {
+          "type": "select",
+          "id": "image_position",
+          "label": "Image Position",
+          "options": [
+            { "value": "center", "label": "Center" },
+            { "value": "top", "label": "Top" },
+            { "value": "bottom", "label": "Bottom" }
+          ],
+          "default": "center"
+        },
+        {
+          "type": "range",
+          "id": "overlay_opacity",
+          "min": 0,
+          "max": 100,
+          "step": 5,
+          "unit": "%",
+          "label": "Media Overlay Opacity",
+          "default": 10
+        },
+        {
+          "type": "header",
+          "content": "Button"
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_cta",
+          "label": "Enable Button",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "btn_label",
+          "label": "Button Label",
+          "default": "Read More"
+        },
+        {
+          "type": "url",
+          "id": "btn_link",
+          "label": "Button Link"
+        },
+        {
+          "type": "header",
+          "content": "Styling"
+        },
+        {
+          "type": "color",
+          "id": "bg_card_color",
+          "label": "Card Background Color",
+          "info": "Leave transparent to use section default."
+        },
+        {
+          "type": "color",
+          "id": "custom_dot_color",
+          "label": "Custom Dot Color",
+          "info": "Overrides active dot color."
+        },
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Timeline Icon (Optional)",
+          "info": "Displays inside the dot."
+        },
+        {
+          "type": "select",
+          "id": "text_alignment",
+          "label": "Text Alignment",
+          "options": [
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ],
+          "default": "left"
+        },
+        {
+          "type": "select",
+          "id": "animation_style",
+          "label": "Entrance Animation",
+          "options": [
+            { "value": "fade-up", "label": "Fade Up" },
+            { "value": "slide-in", "label": "Slide In" },
+            { "value": "scale", "label": "Scale" }
+          ],
+          "default": "fade-up"
+        },
+        {
+          "type": "text",
+          "id": "custom_class",
+          "label": "Custom CSS Class"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Story Timeline",
+      "blocks": [
+        { "type": "timeline_item", "settings": { "year_text": "2020", "title": "The Idea", "description": "<p>It all started with a simple idea and a passion for creating something unique.</p>" } },
+        { "type": "timeline_item", "settings": { "year_text": "2022", "title": "First Launch", "description": "<p>After years of development, we introduced our first collection to the world.</p>" } },
+        { "type": "timeline_item", "settings": { "year_text": "2024", "title": "Global Expansion", "description": "<p>Reaching new markets and expanding our vision globally.</p>" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

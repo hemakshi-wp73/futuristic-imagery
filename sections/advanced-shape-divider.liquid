@@ -1,0 +1,218 @@
+{% schema %}
+{
+  "name": "Advanced Shape Divider",
+  "settings": [
+    {
+      "type": "select",
+      "id": "divider_shape",
+      "label": "Divider Shape",
+      "options": [
+        { "value": "waves", "label": "Waves" },
+        { "value": "clouds", "label": "Clouds" },
+        { "value": "zigzag", "label": "Zigzag" },
+        { "value": "mountains", "label": "Mountains" },
+        { "value": "arc", "label": "Arc" },
+        { "value": "triangle_top", "label": "Triangle Top" },
+        { "value": "triangle_bottom", "label": "Triangle Bottom" },
+        { "value": "tilt", "label": "Tilt" },
+        { "value": "curve", "label": "Curve" },
+        { "value": "split_curve", "label": "Split Curve" },
+        { "value": "rounded_wave", "label": "Rounded Wave" },
+        { "value": "double_wave", "label": "Double Wave" },
+        { "value": "layer_wave", "label": "Layer Wave" },
+        { "value": "steps", "label": "Steps" },
+        { "value": "fire", "label": "Fire" },
+        { "value": "drip", "label": "Drip" },
+        { "value": "torn_paper", "label": "Torn Paper" },
+        { "value": "valley", "label": "Valley" },
+        { "value": "curve_asym", "label": "Asymmetric Curve" },
+        { "value": "peak_wave", "label": "Peak Wave" },
+        { "value": "soft_hills", "label": "Soft Hills" },
+        { "value": "wave_brush", "label": "Brush Wave" }
+      ],
+      "default": "waves"
+    },
+    {
+      "type": "color",
+      "id": "divider_fill_color",
+      "label": "Divider Shape Color",
+      "default": "#f8f8f8"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "transparent"
+    },
+    {
+      "type": "checkbox",
+      "id": "reverse_shape",
+      "label": "Reverse Shape (Flip Vertically)",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "divider_height",
+      "min": 30,
+      "max": 400,
+      "step": 5,
+      "unit": "px",
+      "label": "Divider Height",
+      "default": 160
+    },
+    {
+      "type": "range",
+      "id": "divider_width_multiplier",
+      "min": 1,
+      "max": 3,
+      "step": 0.1,
+      "unit": "x",
+      "label": "Divider Width Multiplier",
+      "default": 1.2
+    }
+  ],
+  "presets": [
+    {
+      "name": "Advanced Shape Divider"
+    }
+  ]
+}
+{% endschema %}
+<div class="custom-shape-divider-{{ section.id }}">
+  {% case section.settings.divider_shape %}
+    {% when 'waves' %}
+      <!-- Premium smooth waves -->
+      <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <path d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,58.7C672,64,768,96,864,117.3C960,139,1056,149,1152,144C1248,139,1344,117,1392,106.7L1440,96V0H0Z" class="shape-fill"></path>
+      </svg>
+    {% when 'clouds' %}
+      <!-- Fluffy clouds -->
+      <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <path d="M0,60 C150,120 350,0 600,80 C850,160 1050,40 1200,100 L1200,0 L0,0Z" class="shape-fill"></path>
+      </svg>
+    {% when 'zigzag' %}
+      <!-- Sharp zigzag -->
+      <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <path d="M0,0 60,120 120,0 180,120 240,0 300,120 360,0 420,120 480,0 540,120 600,0 660,120 720,0 780,120 840,0 900,120 960,0 1020,120 1080,0 1140,120 1200,0 1200,120 0,120Z" class="shape-fill"></path>
+      </svg>
+    {% when 'mountains' %}
+      <!-- Mountain peaks -->
+      <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <path d="M0,120L200,20L400,100L600,10L800,100L1000,40L1200,120V0H0Z" class="shape-fill"></path>
+      </svg>
+    {% when 'arc' %}
+      <!-- Smooth arc -->
+      <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <path d="M0,0 C300,150 900,-30 1200,80 L1200,0 L0,0Z" class="shape-fill"></path>
+      </svg>
+    {% when 'triangle_top' %}
+      <!-- Top triangle -->
+      <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <path d="M0,120L600,0L1200,120H0Z" class="shape-fill"></path>
+      </svg>
+    {% when 'triangle_bottom' %}
+      <!-- Bottom triangle -->
+      <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <path d="M0,0L600,120L1200,0V120H0Z" class="shape-fill"></path>
+      </svg>
+      {% when 'tilt' %}
+  <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+    <path d="M0,0L1200,120L1200,0Z" class="shape-fill"></path>
+  </svg>
+
+{% when 'curve' %}
+  <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+    <path d="M0,120C300,20 900,20 1200,120V0H0Z" class="shape-fill"></path>
+  </svg>
+
+{% when 'split_curve' %}
+  <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+    <path d="M0,60C200,120 400,0 600,60C800,120 1000,0 1200,60V0H0Z" class="shape-fill"></path>
+  </svg>
+
+{% when 'rounded_wave' %}
+  <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+    <path d="M0,80C150,20 350,20 500,80C650,140 850,140 1000,80C1100,40 1150,20 1200,40V0H0Z" class="shape-fill"></path>
+  </svg>
+
+{% when 'double_wave' %}
+  <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+    <path d="M0,60C150,120 350,0 600,60C850,120 1050,0 1200,60V120H0Z" class="shape-fill"></path>
+  </svg>
+
+{% when 'layer_wave' %}
+  <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+    <path opacity=".5" d="M0,80C300,140 900,20 1200,80V120H0Z" class="shape-fill"></path>
+    <path d="M0,100C300,40 900,160 1200,100V120H0Z" class="shape-fill"></path>
+  </svg>
+
+{% when 'steps' %}
+  <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+    <path d="M0,120V90H200V60H400V30H600V0H800V30H1000V60H1200V120Z" class="shape-fill"></path>
+  </svg>
+
+{% when 'fire' %}
+  <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+    <path d="M0,120C80,20 160,20 240,120C320,20 400,20 480,120C560,20 640,20 720,120C800,20 880,20 960,120C1040,20 1120,20 1200,120V0H0Z" class="shape-fill"></path>
+  </svg>
+
+{% when 'drip' %}
+  <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+    <path d="M0,0H1200V60C1150,60 1150,120 1100,120C1050,120 1050,60 1000,60C950,60 950,120 900,120C850,120 850,60 800,60C750,60 750,120 700,120C650,120 650,60 600,60C550,60 550,120 500,120C450,120 450,60 400,60C350,60 350,120 300,120C250,120 250,60 200,60C150,60 150,120 100,120C50,120 50,60 0,60Z" class="shape-fill"></path>
+  </svg>
+
+{% when 'torn_paper' %}
+  <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+    <path d="M0,100L60,90L120,110L180,80L240,100L300,70L360,100L420,60L480,100L540,80L600,100L660,70L720,100L780,60L840,100L900,80L960,100L1020,70L1080,100L1140,90L1200,100V120H0Z" class="shape-fill"></path>
+  </svg>
+
+{% when 'valley' %}
+  <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+    <path d="M0,0L300,20L600,120L900,20L1200,0V120H0Z" class="shape-fill"></path>
+  </svg>
+
+{% when 'curve_asym' %}
+  <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+    <path d="M0,100C250,20 400,20 600,100C850,180 1000,20 1200,60V0H0Z" class="shape-fill"></path>
+  </svg>
+
+{% when 'peak_wave' %}
+  <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+    <path d="M0,120L150,20L300,120L450,20L600,120L750,20L900,120L1050,20L1200,120V0H0Z" class="shape-fill"></path>
+  </svg>
+
+{% when 'soft_hills' %}
+  <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+    <path d="M0,90C100,40 200,40 300,90C400,140 500,140 600,90C700,40 800,40 900,90C1000,140 1100,140 1200,90V120H0Z" class="shape-fill"></path>
+  </svg>
+
+{% when 'wave_brush' %}
+  <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+    <path d="M0,50C100,150 300,-50 450,50C600,150 750,-50 900,50C1050,150 1150,20 1200,60V120H0Z" class="shape-fill"></path>
+  </svg>
+    {% else %}
+      <!-- Default = waves -->
+      <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <path d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,58.7C672,64,768,96,864,117.3C960,139,1056,149,1152,144C1248,139,1344,117,1392,106.7L1440,96V0H0Z" class="shape-fill"></path>
+      </svg>
+  {% endcase %}
+</div>
+<style>
+  .custom-shape-divider-{{ section.id }} {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+    z-index: 5;
+    background-color: {{ section.settings.background_color }};
+  }
+  .custom-shape-divider-{{ section.id }} svg {
+    display: block;
+    width: calc({{ section.settings.divider_width_multiplier }} * 100%);
+    height: {{ section.settings.divider_height }}px;
+    transform: {% if section.settings.reverse_shape %}scaleY(-1){% else %}none{% endif %};
+  }
+  .custom-shape-divider-{{ section.id }} .shape-fill {
+    fill: {{ section.settings.divider_fill_color }};
+  }
+</style>
